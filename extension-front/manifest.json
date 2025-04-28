@@ -1,21 +1,20 @@
 {
   "manifest_version": 3,
-  "name": "KSE Stock Tracker",
+  "name": "KSE-100 & HBL Tracker",
   "version": "1.0",
+  "description": "Shows live KSE-100 points and HBL stock price with alerts.",
   "permissions": [
+    "alarms",
     "storage",
-    "notifications",
-    "https://dps.psx.com.pk/*" 
+    "notifications"
   ],
   "background": {
     "service_worker": "background.js"
   },
   "action": {
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
   },
-  "host_permissions": [
-    "https://dps.psx.com.pk/*" 
-  ],
   "icons": {
     "16": "icon.png",
     "48": "icon.png",
