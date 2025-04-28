@@ -1,29 +1,27 @@
-// const API_URL = 'https://dps.psx.com.pk/timeseries/int/KSE100'; // Replace with real API!
-const API_URL = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://dps.psx.com.pk/timeseries/int/KSE100');
-
-const STOCK_URL = 'https://dps.psx.com.pk/timeseries/int/HBL'; // Replace with real API!
+const API_URL = 'http://localhost:3000/kse100'; // Replace with real API!
+// const STOCK_URL = 'https://dps.psx.com.pk/timeseries/int/HBL'; // Replace with real API!
 
 const ALERT_PRICE = 155; // Target price for HBL
 
 async function fetchData() {
   try {
     // Fetch KSE-100
-    const indexResponse = await fetch(API_URL, { mode: 'no-cors' });
-    console.log('Index Response:', indexResponse);
-    // const indexData = await indexResponse.json();
-    // const kseIndex = Math.round(indexData.indexValue);
+    const indexResponse = await fetch(API_URL);
+    const indexData = await indexResponse.json();
+    const kseIndex = Math.round(indexData['data'][0][1]);
+    console.log('KSE-100 Index:', kseIndex);
 
     // Update badge
     chrome.action.setBadgeText({ text: "kseIndex.toString()" });
     chrome.action.setBadgeBackgroundColor({ color: '#4CAF50' });
 
     // Fetch HBL stock
-    const stockResponse = await fetch(STOCK_URL, { mode: 'no-cors' });
+    // const stockResponse = await fetch(STOCK_URL, { mode: 'no-cors' });
     // const stockData = await stockResponse.json();
     // const hblPrice = stockData.price;
 
     // Save data
-    // chrome.storage.local.set({ kseIndex, hblPrice });
+    chrome.storage.local.set({ kseIndex});
 
     // Check for alert
     // if (hblPrice > ALERT_PRICE) {
