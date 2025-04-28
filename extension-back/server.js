@@ -21,6 +21,28 @@ app.get('/kse100', async (req, res) => {
   }
 });
 
+app.get('/stock/:symbol', async (req, res) => {
+    const { symbol } = req.params; // Get the symbol from URL
+  
+    try {
+      const url = `https://dps.psx.com.pk/timeseries/int/${symbol}`; // Build dynamic URL
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        return res.status(response.status).json({ error: 'Failed to fetch data from PSX' });
+      }
+  
+      const data = await response.json();
+      res.json(data); // Send the fetched stock data
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Server error while fetching stock data' });
+    }
+  });
+  
+
+
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
