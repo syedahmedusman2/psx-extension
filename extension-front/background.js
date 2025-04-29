@@ -50,7 +50,7 @@ async function fetchData() {
 }
 
 // Set alarm to fetch every 1 minute
-chrome.alarms.create('fetchKSE', { periodInMinutes: 1 });
+chrome.alarms.create('fetchKSE', { periodInMinutes: 5 });
 chrome.alarms.onAlarm.addListener(fetchData);
 
 // Fetch immediately on start
