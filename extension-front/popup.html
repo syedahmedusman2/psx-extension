@@ -1,11 +1,131 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>KSE-100 Tracker</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PSX Tracker</title>
   <script src="popup.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 16px;
+      background: #f5f5f5;
+      color: #333;
+      width: 320px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .kse100 {
+      font-size: 24px;
+      font-weight: bold;
+      color: #006400;
+    }
+
+    .search {
+      display: flex;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 6px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      padding: 6px 10px;
+      background-color: #007bff;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .stock-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .stock-item {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-top: 6px;
+      padding: 8px;
+      position: relative;
+    }
+
+    .stock-item span {
+      font-weight: bold;
+    }
+
+    .graph-placeholder {
+      margin-top: 16px;
+      height: 140px;
+      background: #e0e0e0;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #888;
+      font-size: 14px;
+    }
+  </style>
 </head>
-<body style="font-family: Arial, sans-serif; margin: 20px;">
-  <h2 id="kse">Loading KSE-100...</h2>
-  <h3 id="hbl">Loading HBL...</h3>
+<body>
+
+  <div class="header">
+    <div>KSE-100 Index</div>
+    <div class="kse100" id="kse100-value">Loading...</div>
+  </div>
+
+  <div class="search">
+    <input type="text" id="stock-input" placeholder="Enter stock symbol..." />
+    <button id="add-btn">Add</button>
+  </div>
+
+  <ul class="stock-list" id="tracked-stocks">
+    <!-- Tracked stock items will appear here -->
+  </ul>
+
+  <div class="graph-placeholder">
+    📊 Demo graph coming soon
+  </div>
+
+  <!-- <script> -->
+    // Minimal frontend logic to display dummy data
+    // document.getElementById("kse100").innerText = "73,101";
+
+    <!-- const stockInput = document.getElementById("stock-input");
+    const addBtn = document.getElementById("add-btn");
+    const list = document.getElementById("tracked-stocks");
+    const maxStocks = 3;
+
+    addBtn.addEventListener("click", () => {
+      const symbol = stockInput.value.trim().toUpperCase();
+      if (!symbol) return;
+
+      const current = list.querySelectorAll("li").length;
+      if (current >= maxStocks) {
+        alert("You can track up to 3 stocks only.");
+        return;
+      }
+
+      const li = document.createElement("li");
+      li.className = "stock-item";
+      li.innerHTML = `<span>${symbol}</span> — <small>Demo Price: PKR 155.00</small>`;
+      list.appendChild(li);
+      stockInput.value = "";
+    });
+  </script> -->
+
 </body>
 </html>

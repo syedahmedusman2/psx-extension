@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000/kse100'; // Replace with real API!
+const API_URL = 'https://psx-extension.vercel.app/kse100'; // Replace with real API!
 // const STOCK_URL = 'https://dps.psx.com.pk/timeseries/int/HBL'; // Replace with real API!
 
 const ALERT_PRICE = 155; // Target price for HBL
@@ -10,9 +10,11 @@ async function fetchData() {
     const indexData = await indexResponse.json();
     const kseIndex = Math.round(indexData['data'][0][1]);
     console.log('KSE-100 Index:', kseIndex);
+    console.log("I am Working")
+    
 
     // Update badge
-    chrome.action.setBadgeText({ text: "kseIndex.toString()" });
+    chrome.action.setBadgeText({ text: `${kseIndex.toString()}` });
     chrome.action.setBadgeBackgroundColor({ color: '#4CAF50' });
 
     // Fetch HBL stock
@@ -21,16 +23,19 @@ async function fetchData() {
     // const hblPrice = stockData.price;
 
     // Save data
-    chrome.storage.local.set({ kseIndex});
+    chrome.storage.local.set({'kse100' : kseIndex});
+    chrome.storage.local.get(['kse100']).then((result) => {
+      console.log("Value is " + result.kse100);
+    });
 
     // Check for alert
     // if (hblPrice > ALERT_PRICE) {
-      chrome.notifications.create({
-        type: 'basic',
-        iconUrl: 'icon.png',
-        title: 'Stock Alert!',
-        message: `HBL has crossed Rs ${ALERT_PRICE}: Current Rs 122`
-      });
+      // chrome.notifications.create({
+      //   type: 'basic',
+      //   iconUrl: 'icon.png',
+      //   title: 'Stock Alert!',
+      //   message: `HBL has crossed Rs ${ALERT_PRICE}: Current Rs 122`
+      // });
     // }
 
   } catch (error) {
