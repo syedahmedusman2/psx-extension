@@ -9,33 +9,39 @@ async function fetchData() {
     const indexResponse = await fetch(API_URL);
     const indexData = await indexResponse.json();
     const kseIndex = Math.round(indexData['data'][0][1]);
+    const startOfDayIndex = Math.round(indexData['data'].pop()[1]);
     console.log('KSE-100 Index:', kseIndex);
-    console.log("I am Working")
-    
+    // chrome.action.setBadgeText({ text: `${kseIndex.toString()}` });
+    // chrome.action.setBadgeBackgroundColor({ color: '#4CAF50' });
 
-    // Update badge
-    chrome.action.setBadgeText({ text: `${kseIndex.toString()}` });
-    chrome.action.setBadgeBackgroundColor({ color: '#4CAF50' });
 
-    // Fetch HBL stock
-    // const stockResponse = await fetch(STOCK_URL, { mode: 'no-cors' });
-    // const stockData = await stockResponse.json();
-    // const hblPrice = stockData.price;
+    chrome.storage.local.set({ 'kse100': kseIndex });
 
-    // Save data
-    chrome.storage.local.set({'kse100' : kseIndex});
-    chrome.storage.local.get(['kse100']).then((result) => {
-      console.log("Value is " + result.kse100);
-    });
+    // badge logics
+    if (indexData != undefined && indexData != null) {
+      if (!isNaN(kseIndex)) {
+        const badgeText = formatBadgePercent(kseIndex, startOfDayIndex);
+        chrome.action.setBadgeText({ text:`${badgeText}%` });
+        chrome.action.setBadgeBackgroundColor({
+          color: kseIndex >= startOfDayIndex ? '#006400' : '#8B0000' // dark green / dark red
+        });
+
+        // Show full info on hover
+        chrome.action.setTitle({
+          title: `KSE-100: ${kseIndex}\nChange: ${(kseIndex - startOfDayIndex).toFixed(2)} (${((kseIndex - startOfDayIndex) / startOfDayIndex * 100).toFixed(2)}%)`
+        });
+      }
+
+    }
 
     // Check for alert
     // if (hblPrice > ALERT_PRICE) {
-      // chrome.notifications.create({
-      //   type: 'basic',
-      //   iconUrl: 'icon.png',
-      //   title: 'Stock Alert!',
-      //   message: `HBL has crossed Rs ${ALERT_PRICE}: Current Rs 122`
-      // });
+    // chrome.notifications.create({
+    //   type: 'basic',
+    //   iconUrl: 'icon.png',
+    //   title: 'Stock Alert!',
+    //   message: `HBL has crossed Rs ${ALERT_PRICE}: Current Rs 122`
+    // });
     // }
 
   } catch (error) {
@@ -48,4 +54,21 @@ chrome.alarms.create('fetchKSE', { periodInMinutes: 1 });
 chrome.alarms.onAlarm.addListener(fetchData);
 
 // Fetch immediately on start
+
+// tool bar badge
 fetchData();
+
+function formatBadgePercent(current, start) {
+  const cur = Number(current);
+  const base = Number(start);
+
+  if (isNaN(cur) || isNaN(base) || base === 0) return '';
+
+  const diff = cur - base;
+  const percent = (diff / base) * 100;
+  const rounded = Math.abs(percent).toFixed(1); // e.g. 2.3
+  const arrow = percent >= 0 ? '+' : '-';
+
+  // Badge: arrow + percent (e.g. ↑2.3)
+  return `${arrow}${rounded}`.slice(0, 4);
+}
