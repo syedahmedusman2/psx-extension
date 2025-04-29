@@ -1,8 +1,17 @@
-document.addEventListener('DOMContentLoaded', function () {
-  console.log("I am Working popup js");
-  chrome.storage.local.get(['kse100']).then((result) => {
-    console.log("Value is from pop.js " + result.kse100);
-  });
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM fully loaded");
+  const kseEl = document.getElementById("kse100-value");
+  if (kseEl) {
+    chrome.storage.local.get(['kse100'], (result) => {
+      if (result.kse100) {
+        kseEl.textContent = `KSE-100: ${result.kse100}`;
+      } else {
+        console.warn("KSE-100 value not found in storage");
+      }
+    });
+  }
+});
+
   // chrome.storage.local.get(['kse100'], (result) => {
   //   console.log(`!!!!!!!! ${JSON.stringify(result)}`);
     
@@ -23,4 +32,4 @@ document.addEventListener('DOMContentLoaded', function () {
   //   //   }
   //   // }
   // });
-});
+// });
