@@ -89,58 +89,152 @@ async function renderTrackedStocks(trackedList) {
   chrome.storage.local.set({ trackedStocks: trackedArray });
   for (const symbol of trackedArray) {
     const li = document.createElement('li');
-    li.style.listStyleType = 'none'; // for <li>
-    li.style.margin = '0';
-    li.style.padding = '3px';
-    li.style.borderBottom = '1px solid #ccc';
-    li.style.display = 'flex';
-    li.style.justifyContent = 'space-between';
-    li.style.alignItems = 'center'; // This vertically centers children
-    // --- Header Row (Symbol + Remove) ---
-    const topRow = document.createElement('div');
-    topRow.style.display = 'flex';
-    topRow.style.justifyContent = 'space-between';
-    topRow.style.alignItems = 'center';
+  li.style.listStyleType = 'none';
+  li.style.marginBottom = '12px';
+  li.style.padding = '12px';
+  li.style.border = '1px solid #ddd';
+  li.style.borderRadius = '8px';
+  li.style.backgroundColor = '#f9f9f9';
+  li.style.boxShadow = '0 1px 3px rgba(0,0,0,0.05)';
 
-    const text = document.createElement('span');
-    text.textContent = symbol;
+  // --- Header Row (Symbol + Remove) ---
+  const topRow = document.createElement('div');
+  topRow.style.display = 'flex';
+  topRow.style.justifyContent = 'space-between';
+  topRow.style.alignItems = 'center';
+  topRow.style.marginBottom = '6px';
 
-    // Make the whole item clickable
-    li.addEventListener('click', () => {
-      window.open(`https://dps.psx.com.pk/company/${symbol}`, '_blank');
-    });
+  const text = document.createElement('span');
+  text.style.fontWeight = 'bold';
+  text.style.fontSize = '16px';
+  text.textContent = symbol;
 
-    const removeBtn = document.createElement('button');
-    removeBtn.textContent = 'x';
-    removeBtn.className = 'remove-btn';
-    removeBtn.style.marginLeft = '6px';
+  const removeBtn = document.createElement('button');
+  removeBtn.textContent = '❌';
+  removeBtn.className = 'remove-btn';
+  removeBtn.style.border = 'none';
+  removeBtn.style.background = '#e74c3c';
+  removeBtn.style.color = 'white';
+  removeBtn.style.borderRadius = '50%';
+  removeBtn.style.width = '20px';
+  removeBtn.style.height = '20px';
+  removeBtn.style.fontSize = '12px';
+  removeBtn.style.cursor = 'pointer';
+
+  removeBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    trackedSymbols.delete(symbol);
+    renderTrackedStocks(trackedList);
+  });
+
+  topRow.appendChild(text);
+  topRow.appendChild(removeBtn);
+  li.appendChild(topRow);
+
+  // --- Price Info ---
+  const stockData = await fetchStockData(symbol);
+  const stockPrice = document.createElement('div');
+  stockPrice.innerHTML = `
+    <strong style="font-size: 14px;">Price: Rs ${stockData['data'][0][1]}</strong><br>
+    <span style="color: gray; font-size: 11px;">As of ${formatUnixTime(stockData['data'][0][0])}</span>
+  `;
+  stockPrice.style.marginBottom = '8px';
+  li.appendChild(stockPrice);
+
+  // --- Alert Input Field ---
+  const inputField = document.createElement('input');
+  inputField.type = 'number';
+  inputField.placeholder = 'Set Alert Price';
+  inputField.style.width = '100%';
+  inputField.style.padding = '6px 10px';
+  inputField.style.border = '1px solid #ccc';
+  inputField.style.borderRadius = '6px';
+  inputField.style.fontSize = '13px';
+  inputField.style.outline = 'none';
+  inputField.style.boxSizing = 'border-box';
+  inputField.style.backgroundColor = '#fff';
+
+  li.appendChild(inputField);
+  trackedList.appendChild(li);
+//     const li = document.createElement('li');
+//     li.style.listStyleType = 'none'; // for <li>
+//     li.style.margin = '0';
+//     li.style.padding = '3px';
+//     li.style.borderBottom = '1px solid #ccc';
+//     li.style.display = 'block'; // Let li stack vertically
+
+// const liContent = document.createElement('div');
+// liContent.style.display = 'flex';
+// liContent.style.justifyContent = 'space-between';
+// liContent.style.alignItems = 'center';
+//     // --- Header Row (Symbol + Remove) ---
+//     const topRow = document.createElement('div');
+//     // topRow.style.display = 'flex';
+//     // topRow.style.justifyContent = 'space-between';
+//     // topRow.style.alignItems = 'center';
+
+//     const text = document.createElement('span');
+//     text.textContent = symbol;
+
+//     // Make the whole item clickable
+//     // li.addEventListener('click', () => {
+//     //   window.open(`https://dps.psx.com.pk/company/${symbol}`, '_blank');
+//     // });
+
+//     const removeBtn = document.createElement('button');
+//     removeBtn.textContent = 'x';
+//     removeBtn.className = 'remove-btn';
+//     removeBtn.style.marginLeft = '6px';
     
 
 
-    removeBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      trackedSymbols.delete(symbol);
-      renderTrackedStocks(trackedList);
-    });
+//     removeBtn.addEventListener('click', (e) => {
+//       e.stopPropagation();
+//       trackedSymbols.delete(symbol);
+//       renderTrackedStocks(trackedList);
+//     });
 
-    topRow.appendChild(text);
-    topRow.appendChild(removeBtn);
-    li.appendChild(topRow);
+//     topRow.appendChild(text);
+//     topRow.appendChild(removeBtn);
+//     li.appendChild(topRow);
 
-    // --- Price Info (next line) ---
-    const stockData = await fetchStockData(symbol);
-    const stockPrice = document.createElement('div');
-    stockPrice.innerHTML = `
-  <strong>Price: Rs ${stockData['data'][0][1]}</strong><br>
-  <span style="color: gray; font-size: 10px;">As of ${formatUnixTime(stockData['data'][0][0])}</span>
-`;
-    // stockPrice.textContent = `Price: ${stockData['data'][0][1]} As of ${formatUnixTime(stockData['data'][0][0])}`;
-    stockPrice.style.marginTop = '4px';
-    stockPrice.style.fontSize = '14px';
-    stockPrice.style.color = '#444';
-    li.appendChild(stockPrice);
+//     // --- Price Info (next line) ---
+//     const stockData = await fetchStockData(symbol);
+//     const stockPrice = document.createElement('div');
+//     stockPrice.innerHTML = `
+//   <strong>Price: Rs ${stockData['data'][0][1]}</strong><br>
+//   <span style="color: gray; font-size: 10px;">As of ${formatUnixTime(stockData['data'][0][0])}</span>
+// `;
+//     // stockPrice.textContent = `Price: ${stockData['data'][0][1]} As of ${formatUnixTime(stockData['data'][0][0])}`;
+//     stockPrice.style.marginTop = '4px';
+//     stockPrice.style.fontSize = '14px';
+//     stockPrice.style.color = '#444';
+//     li.appendChild(stockPrice);
 
-    trackedList.appendChild(li);
+//     // -- Input Field ----
+//     const inputWrapper = document.createElement('div');
+// inputWrapper.style.marginTop = '4px'; // spacing from above
+// inputWrapper.style.width = '100%';    // full width to force next line
+
+// const inputField = document.createElement('input');
+// inputField.type = 'number';
+// inputField.placeholder = 'Alert Price';
+// // Stylish input
+// inputField.style.width = '60%';
+// inputField.style.padding = '8px 8px';
+// inputField.style.border = '1px solid #ccc';
+// inputField.style.borderRadius = '8px';
+// inputField.style.fontSize = '12px';
+// inputField.style.marginTop = '6px';
+// inputField.style.outline = 'none';
+// inputField.style.boxSizing = 'border-box';
+
+// inputWrapper.appendChild(inputField);
+// li.appendChild(inputWrapper);
+
+    
+
+//     trackedList.appendChild(li);
   }
 
 

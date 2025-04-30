@@ -115,17 +115,6 @@ async function fetchStockData(symbol) {
   }
 }
 
-async function fetchStockData(symbol) {
-  try {
-    const response = await fetch();
-    if (!response.ok) throw new Error("API error");
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error(`Failed to fetch data for ${symbol}:`, error);
-    return null;
-  }
-}
 
 // 🚀 Main function to load and display all tracked stocks
 // async function loadTrackedStocks() {
