@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PSX Tracker</title>
   <style>
     body {
@@ -77,8 +78,64 @@
       color: #888;
       font-size: 14px;
     }
+
+    #search-results li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 8px;
+      margin: 4px 0;
+      background: #f4f4f4;
+      border-radius: 6px;
+    }
+
+    .add-btn {
+  background-color: #4CAF50;       /* Green background */
+  color: white;                    /* White icon color */
+  border: none;                    /* No border */
+  padding: 4px 8px;                /* Smaller button with some padding */
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 12px;                  /* Slightly smaller font size */
+  transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+/* Hover effect for the Add button */
+.add-btn:hover {
+  background-color: #45a049;       /* Darker green on hover */
+  transform: scale(1.1);            /* Slightly enlarge on hover */
+}
+
+/* Remove Button Styling */
+.remove-btn {
+  background-color: #ff4d4d;       /* Red background */
+  color: white;                    /* White icon color */
+  border: none;                    /* No border */
+  padding: 4px 8px;                /* Smaller button with some padding */
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 12px;                  /* Slightly smaller font size */
+  transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+/* Hover effect for the Remove button */
+.remove-btn:hover {
+  background-color: #d11a2a;       /* Darker red on hover */
+  transform: scale(1.1);            /* Slightly enlarge on hover */
+}
+
+    #search-results {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      margin: 10px 0;
+    }
   </style>
 </head>
+
 <body>
 
   <div class="header">
@@ -88,23 +145,22 @@
   <p id="last-updated">As of —</p>
 
   <div class="search">
-    <input type="text" id="stock-input" placeholder="Enter stock symbol..." />
-    <button id="add-btn">Add</button>
+    <input type="text" id="stock-search" placeholder="Search stock..." />
   </div>
+  <ul id="search-results"></ul>
 
-  <ul class="stock-list" id="tracked-stocks">
-    <!-- Tracked stock items will appear here -->
-  </ul>
-  
+  <h3>Tracked Stocks (max 3):</h3>
+  <ul id="tracked-stocks"></ul>
+
   <div class="graph-placeholder">
     <canvas id="stockChart"></canvas>
   </div>
 
   <!-- <script> -->
-    <!-- // Minimal frontend logic to display dummy data
+  <!-- // Minimal frontend logic to display dummy data
     // document.getElementById("kse100").innerText = "73,101"; -->
 
-    <!-- const stockInput = document.getElementById("stock-input");
+  <!-- const stockInput = document.getElementById("stock-input");
     const addBtn = document.getElementById("add-btn");
     const list = document.getElementById("tracked-stocks");
     const maxStocks = 3;
@@ -126,8 +182,9 @@
       stockInput.value = "";
     });
   </script> -->
-  
+  <script src="search.js"></script>
   <script src="chart.js"></script>
   <script src="popup.js" defer></script>
 </body>
+
 </html>

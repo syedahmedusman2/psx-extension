@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM fully loaded");
   const kseEl = document.getElementById("kse100-value");
@@ -12,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-
+  
   // Chart Logic
   let chartInstance;
 
@@ -65,6 +66,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initial chart
   updateChart();
+
+  // search
+  initSearchLogic();
 
   // Auto-update every 5 minutes
   setInterval(updateChart, 5 * 60 * 1000);
