@@ -125,11 +125,11 @@ async function renderTrackedStocks(trackedList) {
       e.stopPropagation();
       trackedSymbols.delete(symbol);
       // Remove alert
-  chrome.storage.local.get(['alerts'], (res) => {
-    const alerts = res.alerts || {};
-    delete alerts[symbol];
-    chrome.storage.local.set({ alerts });
-  });
+      chrome.storage.local.get(['alerts'], (res) => {
+        const alerts = res.alerts || {};
+        delete alerts[symbol];
+        chrome.storage.local.set({ alerts });
+      });
       renderTrackedStocks(trackedList);
     });
 
@@ -158,7 +158,7 @@ async function renderTrackedStocks(trackedList) {
     const inputField = document.createElement('input');
     inputField.type = 'number';
     inputField.placeholder = 'Alert Price';
-    inputField.style.width = '60%';
+    inputField.style.width = '40%';
     inputField.style.padding = '6px 8px';
     inputField.style.border = '1px solid #ccc';
     inputField.style.borderRadius = '6px';
@@ -168,6 +168,7 @@ async function renderTrackedStocks(trackedList) {
 
     // Button
     const setAlertBtn = document.createElement('button');
+    const removeAlertBtn = document.createElement('button');
     setAlertBtn.textContent = 'Set Alert';
     setAlertBtn.style.padding = '6px 10px';
     setAlertBtn.style.backgroundColor = '#007bff';
@@ -175,7 +176,16 @@ async function renderTrackedStocks(trackedList) {
     setAlertBtn.style.border = 'none';
     setAlertBtn.style.borderRadius = '6px';
     setAlertBtn.style.cursor = 'pointer';
-    setAlertBtn.style.fontSize = '12px';
+    setAlertBtn.style.fontSize = '11px';
+    // remove
+    removeAlertBtn.textContent = 'Clear Alert';
+    removeAlertBtn.style.padding = '6px 10px';
+    removeAlertBtn.style.backgroundColor = 'red';
+    removeAlertBtn.style.color = 'white';
+    removeAlertBtn.style.border = 'none';
+    removeAlertBtn.style.borderRadius = '6px';
+    removeAlertBtn.style.cursor = 'pointer';
+    removeAlertBtn.style.fontSize = '11px';
 
     // Load saved alert value if available
     chrome.storage.local.get(['alerts'], (res) => {
@@ -197,9 +207,22 @@ async function renderTrackedStocks(trackedList) {
       }
     });
 
+    removeAlertBtn.addEventListener('click', () => {
+      const alertPrice = parseFloat(inputField.value);
+      if (!isNaN(alertPrice)) {
+        chrome.storage.local.get(['alerts'], (res) => {
+          const alerts = res.alerts || {};
+          delete alerts[symbol];
+          chrome.storage.local.set({ alerts });
+        });
+        inputField.value = '';
+      }
+    });
+
     // Append input + button to wrapper
     alertContainer.appendChild(inputField);
     alertContainer.appendChild(setAlertBtn);
+    alertContainer.appendChild(removeAlertBtn);
     li.appendChild(alertContainer);
 
     trackedList.appendChild(li);
