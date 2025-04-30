@@ -89,13 +89,13 @@ function updateChart() {
                 const currDate = new Date(timestamp * 1000);
                 const currHour = currDate.getHours();
           
-                if (index === 0) return `${currHour % 12 || 12} ${currHour < 12 ? 'AM' : 'PM'}`;
+                if (index === 0) return `${currHour % 12 || 12} ${currHour < 12 ? 'AM' : 'PM'}    `;
           
                 const prevTimestamp = Number(this.getLabelForValue(values[index - 1].value));
                 const prevHour = new Date(prevTimestamp * 1000).getHours();
           
                 if (currHour !== prevHour) {
-                  return `${currHour % 12 || 12} ${currHour < 12 ? 'AM' : 'PM'}`;
+                  return `      ${currHour % 12 || 12} ${currHour < 12 ? 'AM' : 'PM'}`;
                 }
                 return '';
               },
