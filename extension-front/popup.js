@@ -1,10 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM fully loaded");
   const kseEl = document.getElementById("kse100-value");
+  const lastUpdatedEl = document.getElementById('last-updated');
   if (kseEl) {
     chrome.storage.local.get(['kse100'], (result) => {
       if (result.kse100) {
-        kseEl.textContent = `KSE-100: ${result.kse100}`;
+        kseEl.textContent = `${result.kse100[1]}`;
+        lastUpdatedEl.innerText = `As of ${formatUnixTime(result.kse100[0])}`;
       } else {
         console.warn("KSE-100 value not found in storage");
       }
@@ -67,3 +69,15 @@ document.addEventListener("DOMContentLoaded", () => {
   // Auto-update every 5 minutes
   setInterval(updateChart, 5 * 60 * 1000);
 });
+
+
+// ------ Utils ---------
+function formatUnixTime(unixTimestamp) {
+  const date = new Date(unixTimestamp * 1000);
+  const options = {
+    year: 'numeric', month: 'short', day: 'numeric',
+    hour: 'numeric', minute: '2-digit',
+    hour12: true
+  };
+  return date.toLocaleString('en-US', options);
+}

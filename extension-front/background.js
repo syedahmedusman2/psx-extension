@@ -11,7 +11,7 @@ async function fetchData() {
     indexData = await indexResponse.json();
     const kseIndex = Math.round(indexData['data'][0][1]);
     const startOfDayIndex = Math.round(indexData['data'].pop()[1]);
-    chrome.storage.local.set({ 'kse100': kseIndex });
+    chrome.storage.local.set({ 'kse100': indexData['data'][0] });
 
     // badge logics
     if (indexData != undefined && indexData != null) {
