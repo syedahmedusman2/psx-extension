@@ -39,6 +39,16 @@ app.get('/stock/:symbol', async (req, res) => {
   }
 });
 
+app.get('/getSymbols', async (req, res) => {
+  try {
+    const response = await fetch('https://dps.psx.com.pk/symbols');
+    const data = await response.json();
+    res.json(data); // Send the data to the client
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch data' });
+  }
+});
+
 
 
 
