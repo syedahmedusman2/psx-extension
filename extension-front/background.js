@@ -12,7 +12,7 @@ async function fetchData() {
     const kseIndex = Math.round(indexData['data'][0][1]);
     const startOfDayIndex = Math.round(indexData['data'].pop()[1]);
     chrome.storage.local.set({ 'kse100': indexData['data'][0] });
-    
+
     // console.log(`These are the symbols saved ${symbols}`)
     // badge logics
     if (indexData != undefined && indexData != null) {
@@ -30,11 +30,41 @@ async function fetchData() {
       }
 
     }
-    
+
   } catch (error) {
     console.error('Error fetching data:', error);
   }
 }
+
+async function getAlertValues() {
+  chrome.storage.local.get(['alerts'], (res) => {
+    const alerts = res.alerts || {};
+    console.log("Alerts:", alerts['SSGC']);
+
+    (async () => {
+      for (const symbol in alerts) {
+        const alertPrice = alerts[symbol];
+        console.log(`Alert for ${symbol}: ${alertPrice}`);
+        const stockData = await fetchStockData(symbol);
+        console.log(`Price for ${symbol}: ${stockData['data'][0][1]}`);
+        // Check for notification display
+        if (stockData && stockData['data'][0][1] >= alertPrice) {
+          console.log(`Alert triggered for ${symbol}: ${stockData['data'][0][1]} >= ${alertPrice}`);
+          chrome.notifications.create({
+            type: 'basic',
+            iconUrl: 'icon.png',
+            title: `Alert for ${symbol}`,
+            message: `Price reached: ${stockData['data'][0][1]}`,
+            priority: 2
+          });
+          // Remove the alert after triggering
+          delete alerts[symbol];
+        }
+      }
+    })();
+  });
+}
+
 
 // Set alarm to fetch every 1 minute
 chrome.alarms.create('fetchKSE', { periodInMinutes: 5 });
@@ -43,11 +73,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log("Message received in background:", request);
   // console.log(indexData['data']);
   if (request.type === 'getStockData') {
-    sendResponse({ data:indexData['data']});
+    sendResponse({ data: indexData['data'] });
   }
   return true; // or false if response is synchronous
 });
 fetchData();
+getAlertValues();
 
 
 
@@ -68,4 +99,20 @@ function formatBadgePercent(current, start) {
 
   // Badge: arrow + percent (e.g. ↑2.3)
   return `${arrow}${rounded}`.slice(0, 4);
+}
+
+async function fetchStockData(symbol) {
+  try {
+    const response = await fetch(`https://psx-extension.vercel.app/stock/${symbol}`);
+    console.log(`Response for ${symbol}:`, response);
+
+    if (!response.ok) throw new Error("API error");
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error(`Failed to fetch data for ${symbol}:`, error);
+    return null;
+  }
 }
