@@ -90,49 +90,79 @@
     }
 
     .add-btn {
-  background-color: #4CAF50;       /* Green background */
-  color: white;                    /* White icon color */
-  border: none;                    /* No border */
-  padding: 4px 8px;                /* Smaller button with some padding */
-  border-radius: 50px;
-  cursor: pointer;
-  font-size: 12px;                  /* Slightly smaller font size */
-  transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
-}
+      background-color: #4CAF50;
+      /* Green background */
+      color: white;
+      /* White icon color */
+      border: none;
+      /* No border */
+      padding: 4px 8px;
+      /* Smaller button with some padding */
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 12px;
+      /* Slightly smaller font size */
+      transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+    }
 
-/* Hover effect for the Add button */
-.add-btn:hover {
-  background-color: #45a049;       /* Darker green on hover */
-  transform: scale(1.1);            /* Slightly enlarge on hover */
-}
+    /* Hover effect for the Add button */
+    .add-btn:hover {
+      background-color: #45a049;
+      /* Darker green on hover */
+      transform: scale(1.1);
+      /* Slightly enlarge on hover */
+    }
 
-/* Remove Button Styling */
-.remove-btn {
-  background-color: #ff4d4d;       /* Red background */
-  color: white;                    /* White icon color */
-  border: none;                    /* No border */
-  padding: 4px 8px;                /* Smaller button with some padding */
-  border-radius: 50px;
-  cursor: pointer;
-  font-size: 12px;                  /* Slightly smaller font size */
-  transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
-}
+    /* Remove Button Styling */
+    .remove-btn {
+      background-color: #ff4d4d;
+      /* Red background */
+      color: white;
+      /* White icon color */
+      border: none;
+      /* No border */
+      padding: 4px 8px;
+      /* Smaller button with some padding */
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 12px;
+      /* Slightly smaller font size */
+      transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+    }
 
-/* Hover effect for the Remove button */
-.remove-btn:hover {
-  background-color: #d11a2a;       /* Darker red on hover */
-  transform: scale(1.1);            /* Slightly enlarge on hover */
-}
+    /* Hover effect for the Remove button */
+    .remove-btn:hover {
+      background-color: #d11a2a;
+      /* Darker red on hover */
+      transform: scale(1.1);
+      /* Slightly enlarge on hover */
+    }
 
     #search-results {
       list-style: none;
       padding: 0;
       margin: 0;
     }
+    #tracked-stocks {
+  padding: 10px;
+  font-size: 14px;
+}
+.stock-box {
+  margin-bottom: 10px;
+  padding: 8px;
+  background: #f0f0f0;
+  border-radius: 6px;
+  line-height: 1.4;
+}
 
     li {
       margin: 10px 0;
     }
+    ul {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
   </style>
 </head>
 
@@ -150,38 +180,12 @@
   <ul id="search-results"></ul>
 
   <h3>Tracked Stocks (max 3):</h3>
-  <ul id="tracked-stocks"></ul>
+  <div id="tracked-stocks"></div>
+  <!-- <ul id="tracked-stocks"></ul> -->
 
   <div class="graph-placeholder">
     <canvas id="stockChart"></canvas>
   </div>
-
-  <!-- <script> -->
-  <!-- // Minimal frontend logic to display dummy data
-    // document.getElementById("kse100").innerText = "73,101"; -->
-
-  <!-- const stockInput = document.getElementById("stock-input");
-    const addBtn = document.getElementById("add-btn");
-    const list = document.getElementById("tracked-stocks");
-    const maxStocks = 3;
-
-    addBtn.addEventListener("click", () => {
-      const symbol = stockInput.value.trim().toUpperCase();
-      if (!symbol) return;
-
-      const current = list.querySelectorAll("li").length;
-      if (current >= maxStocks) {
-        alert("You can track up to 3 stocks only.");
-        return;
-      }
-
-      const li = document.createElement("li");
-      li.className = "stock-item";
-      li.innerHTML = `<span>${symbol}</span> — <small>Demo Price: PKR 155.00</small>`;
-      list.appendChild(li);
-      stockInput.value = "";
-    });
-  </script> -->
   <script src="search.js"></script>
   <script src="chart.js"></script>
   <script src="popup.js" defer></script>

@@ -12,7 +12,8 @@ async function fetchData() {
     const kseIndex = Math.round(indexData['data'][0][1]);
     const startOfDayIndex = Math.round(indexData['data'].pop()[1]);
     chrome.storage.local.set({ 'kse100': indexData['data'][0] });
-
+    
+    // console.log(`These are the symbols saved ${symbols}`)
     // badge logics
     if (indexData != undefined && indexData != null) {
       if (!isNaN(kseIndex)) {
@@ -40,7 +41,7 @@ chrome.alarms.create('fetchKSE', { periodInMinutes: 5 });
 chrome.alarms.onAlarm.addListener(fetchData);
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log("Message received in background:", request);
-  console.log(indexData['data']);
+  // console.log(indexData['data']);
   if (request.type === 'getStockData') {
     sendResponse({ data:indexData['data']});
   }

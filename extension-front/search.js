@@ -80,19 +80,25 @@ function displayResults(matches, resultsList, trackedList) {
   });
 }
 
-function renderTrackedStocks(trackedList) {
+async function renderTrackedStocks(trackedList) {
   trackedList.innerHTML = '';
+  
   const trackedArray = Array.from(trackedSymbols);
 
   // Save tracked stocks to local storage
   chrome.storage.local.set({ trackedStocks: trackedArray });
-
-  trackedArray.forEach(symbol => {
+  for (const symbol of trackedArray) {
     const li = document.createElement('li');
-    li.style.display = 'flex';
-    li.style.justifyContent = 'space-between';
-    li.style.alignItems = 'center';
-    li.style.padding = '4px 8px';
+    li.style.listStyleType = 'none'; // for <li>
+    li.style.margin = '0';
+    li.style.padding = '3px';
+    li.style.borderBottom = '1px solid #ccc';
+
+    // --- Header Row (Symbol + Remove) ---
+    const topRow = document.createElement('div');
+    topRow.style.display = 'flex';
+    topRow.style.justifyContent = 'space-between';
+    topRow.style.alignItems = 'center';
 
     const text = document.createElement('span');
     text.textContent = symbol;
@@ -101,122 +107,76 @@ function renderTrackedStocks(trackedList) {
     removeBtn.textContent = '❌';
     removeBtn.className = 'remove-btn';
     removeBtn.style.marginLeft = '10px';
+    
 
     removeBtn.addEventListener('click', () => {
       trackedSymbols.delete(symbol);
       renderTrackedStocks(trackedList); // Re-render after removal
     });
 
-    li.appendChild(text);
-    li.appendChild(removeBtn);
+    topRow.appendChild(text);
+    topRow.appendChild(removeBtn);
+    li.appendChild(topRow);
+
+    // --- Price Info (next line) ---
+    const stockData = await fetchStockData(symbol);
+    const stockPrice = document.createElement('div');
+    stockPrice.innerHTML = `
+  <strong>Price: Rs ${stockData['data'][0][1]}</strong><br>
+  <span style="color: gray; font-size: 10px;">As of ${formatUnixTime(stockData['data'][0][0])}</span>
+`;
+    // stockPrice.textContent = `Price: ${stockData['data'][0][1]} As of ${formatUnixTime(stockData['data'][0][0])}`;
+    stockPrice.style.marginTop = '4px';
+    stockPrice.style.fontSize = '14px';
+    stockPrice.style.color = '#444';
+    li.appendChild(stockPrice);
+
     trackedList.appendChild(li);
-  });
+  }
+
+
+  async function fetchStockData(symbol) {
+    try {
+      const response = await fetch(`https://psx-extension.vercel.app/stock/${symbol}`);
+      if (!response.ok) throw new Error("API error");
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error(`Failed to fetch data for ${symbol}:`, error);
+      return null;
+    }
+  }
+
+  function formatUnixTime(unixTimestamp) {
+    const date = new Date(unixTimestamp * 1000);
+    const options = {
+      year: 'numeric', month: 'short', day: 'numeric',
+      hour: 'numeric', minute: '2-digit',
+      hour12: true
+    };
+    return date.toLocaleString('en-US', options);
+  }
+  // trackedArray.forEach(symbol => {
+  //   const li = document.createElement('li');
+  //   li.style.display = 'flex';
+  //   li.style.justifyContent = 'space-between';
+  //   li.style.alignItems = 'center';
+  //   li.style.padding = '4px 8px';
+  //   const text = document.createElement('span');
+  //   text.textContent = symbol;
+
+  //   const removeBtn = document.createElement('button');
+  //   removeBtn.textContent = '❌';
+  //   removeBtn.className = 'remove-btn';
+  //   removeBtn.style.marginLeft = '10px';
+
+  //   removeBtn.addEventListener('click', () => {
+  //     trackedSymbols.delete(symbol);
+  //     renderTrackedStocks(trackedList); // Re-render after removal
+  //   });
+
+  //   li.appendChild(text);
+  //   li.appendChild(removeBtn);
+  //   trackedList.appendChild(li);
+  // });
 }
-
-
-// let allSymbols = null;
-// const trackedSymbols = new Set();
-// function renderTrackedStocks(trackedList) {
-//     trackedList.innerHTML = '';
-//     const trackedArray = Array.from(trackedSymbols);
-  
-//     // Store updated tracked symbols
-//     chrome.storage.local.set({ trackedStocks: trackedArray });
-  
-//     trackedArray.forEach(symbol => {
-//       const li = document.createElement('li');
-//       li.style.display = 'flex';
-//       li.style.justifyContent = 'space-between';
-//       li.style.alignItems = 'center';
-//       li.style.padding = '4px 8px';
-  
-//       const text = document.createElement('span');
-//       text.textContent = symbol;
-  
-//       const removeBtn = document.createElement('button');
-//       removeBtn.textContent = '❌';
-//       removeBtn.className = 'remove-btn';
-//       removeBtn.style.marginLeft = '10px';
-  
-//       removeBtn.addEventListener('click', () => {
-//         trackedSymbols.delete(symbol);
-//         renderTrackedStocks(trackedList); // Re-render after removal
-//       });
-  
-//       li.appendChild(text);
-//       li.appendChild(removeBtn);
-//       trackedList.appendChild(li);
-//     });
-//   }
-  
-
-// function initSearchLogic() {
-//     const searchInput = document.getElementById('stock-search');
-//     const resultsList = document.getElementById('search-results');
-//     const trackedList = document.getElementById('tracked-stocks');
-  
-//     // Load stored symbols
-//     chrome.storage.local.get(['trackedStocks'], (result) => {
-//       const stored = result.trackedStocks || [];
-//       stored.forEach(symbol => trackedSymbols.add(symbol));
-//       renderTrackedStocks(trackedList);
-//     });
-  
-//     searchInput.addEventListener('input', async (e) => {
-//       const query = e.target.value.trim().toLowerCase();
-//       if (query.length < 2) {
-//         resultsList.innerHTML = '';
-//         return;
-//       }
-  
-//       const symbols = await getSymbols();
-//       const filtered = symbols.filter(s =>
-//         s.symbol.toLowerCase().includes(query) ||
-//         s.name.toLowerCase().includes(query)
-//       );
-  
-//       displayResults(filtered.slice(0, 5), resultsList, trackedList);
-//     });
-//   }
-  
-
-// async function getSymbols() {
-//   if (allSymbols) return allSymbols;
-//   try {
-//     const res = await fetch('https://psx-extension.vercel.app/getSymbols');
-//     allSymbols = await res.json();
-//     return allSymbols;
-//   } catch (e) {
-//     console.error('Failed to load symbols', e);
-//     return [];
-//   }
-// }
-
-// function displayResults(matches, resultsList, trackedList) {
-//   resultsList.innerHTML = '';
-
-//   matches.forEach(stock => {
-//     const li = document.createElement('li');
-//     li.innerHTML = `
-//       <span><strong>${stock.symbol}</strong> - ${stock.name}</span>
-//       <button class="add-btn">➕</button>
-//     `;
-
-//     li.querySelector('.add-btn').addEventListener('click', () => {
-//       if (trackedSymbols.size >= 3 || trackedSymbols.has(stock.symbol)) return;
-//       trackedSymbols.add(stock.symbol);
-//       renderTrackedStocks(trackedList);
-//     });
-
-//     resultsList.appendChild(li);
-//   });
-// }
-
-// function renderTrackedStocks(trackedList) {
-//   trackedList.innerHTML = '';
-//   trackedSymbols.forEach(symbol => {
-//     const li = document.createElement('li');
-//     li.textContent = symbol;
-//     trackedList.appendChild(li);
-//   });
-// }

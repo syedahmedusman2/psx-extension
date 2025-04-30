@@ -13,56 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-  
-  // Chart Logic
-  let chartInstance;
 
-  function updateChart() {
-    chrome.runtime.sendMessage({ type: 'getStockData' }, (response) => {
-      const rawData = response?.data;
 
-      if (!rawData || !rawData.length) {
-        console.error('No stock data received', response);
-        return;
-      }
-
-      const reversedData = [...rawData].reverse();
-      const labels = reversedData.map((_, i) => `T${i}`);
-      const prices = reversedData.map(item => item[1]);
-      const trendColor = prices[0] < prices[prices.length - 1] ? 'green' : 'red';
-
-      const ctx = document.getElementById('stockChart').getContext('2d');
-
-      // Destroy old chart if exists
-      if (chartInstance) {
-        chartInstance.destroy();
-      }
-
-      chartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Price',
-            data: prices,
-            borderColor: trendColor,
-            borderWidth: 0.3,
-            backgroundColor: 'rgba(0,0,0,0)',
-            tension: 0.3,
-            pointRadius: 2
-          }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            y: {
-              beginAtZero: false
-            }
-          }
-        }
-      });
-    });
-  }
 
   // Initial chart
   updateChart();
@@ -70,10 +22,59 @@ document.addEventListener("DOMContentLoaded", () => {
   // search
   initSearchLogic();
 
+
   // Auto-update every 5 minutes
   setInterval(updateChart, 5 * 60 * 1000);
 });
+// Chart Logic
+let chartInstance;
 
+function updateChart() {
+  chrome.runtime.sendMessage({ type: 'getStockData' }, (response) => {
+    const rawData = response?.data;
+
+    if (!rawData || !rawData.length) {
+      console.error('No stock data received', response);
+      return;
+    }
+
+    const reversedData = [...rawData].reverse();
+    const labels = reversedData.map((_, i) => `T${i}`);
+    const prices = reversedData.map(item => item[1]);
+    const trendColor = prices[0] < prices[prices.length - 1] ? 'green' : 'red';
+
+    const ctx = document.getElementById('stockChart').getContext('2d');
+
+    // Destroy old chart if exists
+    if (chartInstance) {
+      chartInstance.destroy();
+    }
+
+    chartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Price',
+          data: prices,
+          borderColor: trendColor,
+          borderWidth: 0.3,
+          backgroundColor: 'rgba(0,0,0,0)',
+          tension: 0.3,
+          pointRadius: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: false
+          }
+        }
+      }
+    });
+  });
+}
 
 // ------ Utils ---------
 function formatUnixTime(unixTimestamp) {
@@ -85,3 +86,70 @@ function formatUnixTime(unixTimestamp) {
   };
   return date.toLocaleString('en-US', options);
 }
+
+// ---------
+// 🔧 Function to convert UNIX time to readable format
+function formatTime(unixEpoch) {
+  const date = new Date(unixEpoch);
+  return date.toLocaleString('en-US', {
+    month: 'short', day: '2-digit', year: 'numeric',
+    hour: 'numeric', minute: '2-digit', hour12: true,
+  });
+}
+
+// 🔧 Function to fetch data for one stock from your API
+async function fetchStockData(symbol) {
+  try {
+    const response = await fetch(`https://psx-extension.vercel.app/stock/${symbol}`);
+    console.log(`Response for ${symbol}:`, response);
+
+    if (!response.ok) throw new Error("API error");
+
+    const data = await response.json();
+    console.log(`Data for ${symbol}:`, data);
+
+    return data;
+  } catch (error) {
+    console.error(`Failed to fetch data for ${symbol}:`, error);
+    return null;
+  }
+}
+
+async function fetchStockData(symbol) {
+  try {
+    const response = await fetch();
+    if (!response.ok) throw new Error("API error");
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(`Failed to fetch data for ${symbol}:`, error);
+    return null;
+  }
+}
+
+// 🚀 Main function to load and display all tracked stocks
+// async function loadTrackedStocks() {
+//   const container = document.getElementById('tracked-stocks');
+//   container.innerHTML = ''; // Clear existing content
+
+//   // Get tracked stock symbols from localStorage
+//   const symbols = [];
+//   chrome.storage.local.get(['trackedStocks'], (result) => {
+//     for (const symbol of result.trackedStocks) {
+//       const stockDiv = document.createElement('div');
+//       stockDiv.className = 'stock-box';
+//       stockDiv.innerHTML = `
+//         <strong>{symbol}</strong>: Rs {currentPrice}
+//         <span style="color:{isUp ? 'green' : 'red'};">
+//           ({isUp ? '+' : ''}{priceDiff.toFixed(2)})
+//         </span>
+//         <br><small>As of {formatTime(lastUpdated)}</small>
+//       `;
+
+//       container.appendChild(stockDiv);
+//     }
+
+//   })
+
+
+// }
