@@ -2,26 +2,22 @@ const API_URL = 'https://psx-extension.vercel.app/kse100'; // Replace with real 
 // const STOCK_URL = 'https://dps.psx.com.pk/timeseries/int/HBL'; // Replace with real API!
 
 const ALERT_PRICE = 155; // Target price for HBL
+let indexData;
 
 async function fetchData() {
   try {
     // Fetch KSE-100
     const indexResponse = await fetch(API_URL);
-    const indexData = await indexResponse.json();
+    indexData = await indexResponse.json();
     const kseIndex = Math.round(indexData['data'][0][1]);
     const startOfDayIndex = Math.round(indexData['data'].pop()[1]);
-    console.log('KSE-100 Index:', kseIndex);
-    // chrome.action.setBadgeText({ text: `${kseIndex.toString()}` });
-    // chrome.action.setBadgeBackgroundColor({ color: '#4CAF50' });
-
-
     chrome.storage.local.set({ 'kse100': kseIndex });
 
     // badge logics
     if (indexData != undefined && indexData != null) {
       if (!isNaN(kseIndex)) {
         const badgeText = formatBadgePercent(kseIndex, startOfDayIndex);
-        chrome.action.setBadgeText({ text:`${badgeText}%` });
+        chrome.action.setBadgeText({ text: `${badgeText}%` });
         chrome.action.setBadgeBackgroundColor({
           color: kseIndex >= startOfDayIndex ? '#006400' : '#8B0000' // dark green / dark red
         });
@@ -33,17 +29,7 @@ async function fetchData() {
       }
 
     }
-
-    // Check for alert
-    // if (hblPrice > ALERT_PRICE) {
-    // chrome.notifications.create({
-    //   type: 'basic',
-    //   iconUrl: 'icon.png',
-    //   title: 'Stock Alert!',
-    //   message: `HBL has crossed Rs ${ALERT_PRICE}: Current Rs 122`
-    // });
-    // }
-
+    
   } catch (error) {
     console.error('Error fetching data:', error);
   }
@@ -52,12 +38,22 @@ async function fetchData() {
 // Set alarm to fetch every 1 minute
 chrome.alarms.create('fetchKSE', { periodInMinutes: 5 });
 chrome.alarms.onAlarm.addListener(fetchData);
-
-// Fetch immediately on start
-
-// tool bar badge
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  console.log("Message received in background:", request);
+  console.log(indexData['data']);
+  if (request.type === 'getStockData') {
+    sendResponse({ data:indexData['data']});
+  }
+  return true; // or false if response is synchronous
+});
 fetchData();
 
+
+
+
+
+
+// ------- Utils ----------
 function formatBadgePercent(current, start) {
   const cur = Number(current);
   const base = Number(start);

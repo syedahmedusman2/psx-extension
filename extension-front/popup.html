@@ -94,9 +94,9 @@
   <ul class="stock-list" id="tracked-stocks">
     <!-- Tracked stock items will appear here -->
   </ul>
-
+  
   <div class="graph-placeholder">
-    📊 Demo graph coming soon
+    <canvas id="stockChart"></canvas>
   </div>
 
   <!-- <script> -->
@@ -125,9 +125,8 @@
       stockInput.value = "";
     });
   </script> -->
-  <script
-src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
-</script>
+  
+  <script src="chart.js"></script>
   <script src="popup.js" defer></script>
 </body>
 </html>
