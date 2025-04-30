@@ -28,7 +28,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 // Chart Logic
 let chartInstance;
-
 function updateChart() {
   chrome.runtime.sendMessage({ type: 'getStockData' }, (response) => {
     const rawData = response?.data;
@@ -39,13 +38,23 @@ function updateChart() {
     }
 
     const reversedData = [...rawData].reverse();
-    const labels = reversedData.map((_, i) => `T${i}`);
+
     const prices = reversedData.map(item => item[1]);
+
+    // Build label array with hourly-only labels
+    const labels = reversedData.map((item, index, arr) => {
+      const currHour = new Date(item[0] * 1000).getHours();
+      const prevHour = index > 0 ? new Date(arr[index - 1][0] * 1000).getHours() : null;
+      return item[0]
+      // return currHour !== prevHour
+      //   ? `${currHour % 12 || 12} ${currHour < 12 ? 'AM' : 'PM'}`
+      //   : ''; // Show only when hour changes
+    });
+
     const trendColor = prices[0] < prices[prices.length - 1] ? 'green' : 'red';
 
     const ctx = document.getElementById('stockChart').getContext('2d');
 
-    // Destroy old chart if exists
     if (chartInstance) {
       chartInstance.destroy();
     }
@@ -68,9 +77,52 @@ function updateChart() {
         responsive: true,
         scales: {
           y: {
-            beginAtZero: false
+            beginAtZero: false,
+            grid: {
+              color: 'transparent' // Remove y-axis grid lines
+            }
+          },
+          x: {
+            ticks: {
+              callback: function (value, index, values) {
+                const timestamp = Number(this.getLabelForValue(value));
+                const currDate = new Date(timestamp * 1000);
+                const currHour = currDate.getHours();
+          
+                if (index === 0) return `${currHour % 12 || 12} ${currHour < 12 ? 'AM' : 'PM'}`;
+          
+                const prevTimestamp = Number(this.getLabelForValue(values[index - 1].value));
+                const prevHour = new Date(prevTimestamp * 1000).getHours();
+          
+                if (currHour !== prevHour) {
+                  return `${currHour % 12 || 12} ${currHour < 12 ? 'AM' : 'PM'}`;
+                }
+                return '';
+              },
+              autoSkip: false,
+              maxRotation: 0,
+              minRotation: 0
+            },
+            grid: {
+              color: 'transparent'
+            }
           }
-        }
+        },
+        plugins: {
+          tooltip: {
+            callbacks: {
+              title: function (context) {
+                const timestamp = Number(context[0].label); // Convert label back to number
+                const date = new Date(timestamp * 1000); // Convert to milliseconds
+                const hours = date.getHours();
+                const minutes = date.getMinutes().toString().padStart(2, '0');
+                const ampm = hours < 12 ? 'AM' : 'PM';
+                const displayHour = hours % 12 || 12;
+                return `${displayHour}:${minutes} ${ampm}`;
+              }
+            }
+          }
+        },
       }
     });
   });
@@ -92,8 +144,7 @@ function formatUnixTime(unixTimestamp) {
 function formatTime(unixEpoch) {
   const date = new Date(unixEpoch);
   return date.toLocaleString('en-US', {
-    month: 'short', day: '2-digit', year: 'numeric',
-    hour: 'numeric', minute: '2-digit', hour12: true,
+    hour: 'numeric', hour12: true,
   });
 }
 
