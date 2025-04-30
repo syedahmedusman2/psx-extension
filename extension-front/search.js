@@ -82,7 +82,7 @@ function displayResults(matches, resultsList, trackedList) {
 
 async function renderTrackedStocks(trackedList) {
   trackedList.innerHTML = '';
-  
+
   const trackedArray = Array.from(trackedSymbols);
 
   // Save tracked stocks to local storage
@@ -93,7 +93,9 @@ async function renderTrackedStocks(trackedList) {
     li.style.margin = '0';
     li.style.padding = '3px';
     li.style.borderBottom = '1px solid #ccc';
-
+    li.style.display = 'flex';
+    li.style.justifyContent = 'space-between';
+    li.style.alignItems = 'center'; // This vertically centers children
     // --- Header Row (Symbol + Remove) ---
     const topRow = document.createElement('div');
     topRow.style.display = 'flex';
@@ -103,15 +105,22 @@ async function renderTrackedStocks(trackedList) {
     const text = document.createElement('span');
     text.textContent = symbol;
 
+    // Make the whole item clickable
+    li.addEventListener('click', () => {
+      window.open(`https://dps.psx.com.pk/company/${symbol}`, '_blank');
+    });
+
     const removeBtn = document.createElement('button');
-    removeBtn.textContent = '❌';
+    removeBtn.textContent = 'x';
     removeBtn.className = 'remove-btn';
-    removeBtn.style.marginLeft = '10px';
+    removeBtn.style.marginLeft = '6px';
     
 
-    removeBtn.addEventListener('click', () => {
+
+    removeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
       trackedSymbols.delete(symbol);
-      renderTrackedStocks(trackedList); // Re-render after removal
+      renderTrackedStocks(trackedList);
     });
 
     topRow.appendChild(text);
