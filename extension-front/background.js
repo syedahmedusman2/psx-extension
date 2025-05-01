@@ -9,9 +9,9 @@ async function fetchData() {
     const indexResponse = await fetch(API_URL);
     indexData = await indexResponse.json();
     const kseIndex = Math.round(indexData['data'][0][1]);
-    const startOfDayIndex = Math.round(indexData['data'].pop()[1]);
+    const startOfDayIndex = Math.round(indexData['previousClose']);
     chrome.storage.local.set({ 'kse100': indexData['data'][0] });
-    chrome.storage.local.set({ 'kseChartData': indexData['data']});
+    chrome.storage.local.set({ 'kseChartData': indexData['data'] });
 
     // console.log(`These are the symbols saved ${symbols}`)
     // badge logics
