@@ -9,14 +9,15 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
 });
-
+const previousClose = '114872.18';
 app.get('/kse100', async (req, res) => {
   try {
     const response = await fetch('https://dps.psx.com.pk/timeseries/int/KSE100');
-    const data = await response.json();
+    let data = await response.json();
+    data["previousClose"] = previousClose; // Adds the key "1stKey" with the value "value"
     res.json(data); // Send the data to the client
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch data' });
+    res.status(500).json({ error: `Failed to fetch data` });
   }
 });
 
@@ -48,6 +49,7 @@ app.get('/getSymbols', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch data' });
   }
 });
+
 
 
 

@@ -29,8 +29,8 @@ document.addEventListener("DOMContentLoaded", () => {
 // Chart Logic
 let chartInstance;
 function updateChart() {
-  chrome.runtime.sendMessage({ type: 'getStockData' }, (response) => {
-    const rawData = response?.data;
+  chrome.storage.local.get(['kseChartData'], (response) => {
+    const rawData = response?.kseChartData;
 
     if (!rawData || !rawData.length) {
       console.error('No stock data received', response);

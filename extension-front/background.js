@@ -1,7 +1,6 @@
 const API_URL = 'https://psx-extension.vercel.app/kse100'; // Replace with real API!
 // const STOCK_URL = 'https://dps.psx.com.pk/timeseries/int/HBL'; // Replace with real API!
 
-const ALERT_PRICE = 155; // Target price for HBL
 let indexData;
 
 async function fetchData() {
@@ -12,6 +11,7 @@ async function fetchData() {
     const kseIndex = Math.round(indexData['data'][0][1]);
     const startOfDayIndex = Math.round(indexData['data'].pop()[1]);
     chrome.storage.local.set({ 'kse100': indexData['data'][0] });
+    chrome.storage.local.set({ 'kseChartData': indexData['data']});
 
     // console.log(`These are the symbols saved ${symbols}`)
     // badge logics
@@ -69,14 +69,22 @@ async function getAlertValues() {
 // Set alarm to fetch every 1 minute
 chrome.alarms.create('fetchKSE', { periodInMinutes: 5 });
 chrome.alarms.onAlarm.addListener(fetchData);
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  console.log("Message received in background:", request);
-  // console.log(indexData['data']);
-  if (request.type === 'getStockData') {
-    sendResponse({ data: indexData['data'] });
-  }
-  return true; // or false if response is synchronous
-});
+// chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+//   console.log("Message received in background:", request);
+
+//   if (request.type === 'getStockData') {
+//     if (indexData && indexData['data'] && indexData['data'].length) {
+//       sendResponse({ data: indexData['data'] });
+//     } else {
+//       // Delay and retry once
+//       setTimeout(() => {
+//         sendResponse({ data: indexData['data'] || [] });
+//       }, 300); // Give it a small delay (300ms)
+//     }
+//     return true; // Keep the message channel open for async response
+//   }
+// });
+
 fetchData();
 getAlertValues();
 
