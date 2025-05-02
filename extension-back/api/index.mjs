@@ -9,7 +9,7 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
 });
-const previousClose = '114872.18';
+const previousClose = '111326.57';
 app.get('/kse100', async (req, res) => {
   try {
     const response = await fetch('https://dps.psx.com.pk/timeseries/int/KSE100');
