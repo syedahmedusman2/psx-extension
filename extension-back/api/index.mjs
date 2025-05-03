@@ -1,8 +1,10 @@
 import fetch from 'node-fetch';  // fetch() support in Node
 import express from 'express'
+import { createClient } from '@supabase/supabase-js'
 
 const PORT = process.env.PORT || 3000;
 const app = express()
+const supabase = createClient('https://slgxjauxdygnqokyjbql.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsZ3hqYXV4ZHlnbnFva3lqYnFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYxNjUyMzUsImV4cCI6MjA2MTc0MTIzNX0.GHU0qK2bGMhyDL-Qr_CwXi3CT433dmDNTni68lMcOCU')
 // Allow CORS
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');  // Allow any origin
@@ -50,7 +52,22 @@ app.get('/getSymbols', async (req, res) => {
   }
 });
 
+app.get('/getPreviousClose', async (req, res) => {
+  try {
+    const data = await supabase
+      .from('closing_day_data')
+      .select(`closing_point, created_at`)
+      .order('created_at', { ascending: false })
+      .limit(1);
 
+    // if (error) {
+    //   throw error;
+    // }
+    res.json(data["data"][0]); // Send the data to the client
+  } catch (error) {
+    res.status(500).json({ error: `Failed to fetch previous close`});
+  }
+});
 
 
 
