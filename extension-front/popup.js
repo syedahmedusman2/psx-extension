@@ -1,13 +1,24 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM fully loaded");
-  const kseEl = document.getElementById("kse100-value");
+  console.log("DOM fully loaded");
+  const kseDiffEl = document.getElementById("kse100-diff-value");
   const lastUpdatedEl = document.getElementById('last-updated');
+  const kseEl = document.getElementById("kse100-value");
   if (kseEl) {
-    chrome.storage.local.get(['kse100'], (result) => {
+    chrome.storage.local.get(['kse100', 'previousClosing'], (result) => {
       if (result.kse100) {
         kseEl.textContent = `${result.kse100[1]}`;
         lastUpdatedEl.innerText = `As of ${formatUnixTime(result.kse100[0])}`;
+        const previousClose = result.previousClosing; // Ensure this exists
+        if (!isNaN(previousClose)) {
+          const diff = Math.round(result.kse100[1] - previousClose);
+          const sign = diff >= 0 ? "+" : "-";
+          const diffValue = `${sign}${Math.abs(diff)}`;
+  
+          kseDiffEl.textContent = `(${diffValue})`;
+          kseDiffEl.className = diff >= 0 ? "diff-up" : "diff-down";
+        }
       } else {
         console.warn("KSE-100 value not found in storage");
       }

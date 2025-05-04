@@ -15,13 +15,15 @@
       width: 320px;
     }
 
+
+
     .header {
       text-align: center;
       margin-bottom: 12px;
     }
 
     .kse100 {
-      font-size: 24px;
+      font-size: 22px;
       font-weight: bold;
       color: #006400;
     }
@@ -138,30 +140,47 @@
       /* Slightly enlarge on hover */
     }
 
+    .diff-up {
+      color: green;
+      font-size: 14px;
+      font-weight: bold;
+      margin-left: 6px;
+    }
+
+    .diff-down {
+      color: red;
+      font-size: 14px;
+      font-weight: bold;
+      margin-left: 6px;
+    }
+
     #search-results {
       list-style: none;
       padding: 0;
       margin: 0;
     }
+
     #tracked-stocks {
-  font-size: 14px;
-}
-.stock-box {
-  margin-bottom: 10px;
-  padding: 8px;
-  background: #f0f0f0;
-  border-radius: 6px;
-  line-height: 1.4;
-}
+      font-size: 14px;
+    }
+
+    .stock-box {
+      margin-bottom: 10px;
+      padding: 8px;
+      background: #f0f0f0;
+      border-radius: 6px;
+      line-height: 1.4;
+    }
 
     li {
       margin: 10px 0;
     }
+
     ul {
-  margin: 0;
-  padding: 0;
-  list-style-type: none;
-}
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+    }
   </style>
 </head>
 
@@ -169,7 +188,13 @@
 
   <div class="header">
     <div>KSE-100 Index</div>
-    <div class="kse100" id="kse100-value">Loading...</div>
+    <div>
+      <span id="kse100-value"  class="kse100"></span>
+      <span id="kse100-diff-value"></span>
+    </div>
+    <!-- <div> <div class="kse100" id="kse100-value">Loading...</div>
+    <div class="kse100-diff" id="kse100-diff-value">Loading...</div> -->
+  </div>
   </div>
   <p id="last-updated">As of —</p>
 
