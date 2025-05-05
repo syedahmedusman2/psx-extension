@@ -11,7 +11,7 @@ async function fetchData() {
     const kseIndex = Math.round(indexData['data'][0][1]);
     const startOfDayIndex = Math.round(indexData['previousClose']);
     chrome.storage.local.set({ 'kse100': indexData['data'][0] });
-    chrome.storage.local.set({ 'kse100': indexData['data'][0] });
+    chrome.storage.local.set({ 'kseChartData': indexData['data'] });
     chrome.storage.local.set({ 'previousClosing': startOfDayIndex });
 
     // console.log(`These are the symbols saved ${symbols}`)
