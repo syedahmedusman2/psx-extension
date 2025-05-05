@@ -11,7 +11,8 @@ async function fetchData() {
     const kseIndex = Math.round(indexData['data'][0][1]);
     const startOfDayIndex = Math.round(indexData['previousClose']);
     chrome.storage.local.set({ 'kse100': indexData['data'][0] });
-    chrome.storage.local.set({ 'kseChartData': indexData['data'] });
+    chrome.storage.local.set({ 'kse100': indexData['data'][0] });
+    chrome.storage.local.set({ 'previousClosing': startOfDayIndex });
 
     // console.log(`These are the symbols saved ${symbols}`)
     // badge logics
@@ -52,7 +53,7 @@ async function getAlertValues() {
           console.log(`Alert triggered for ${symbol}: ${stockData['data'][0][1]} >= ${alertPrice}`);
           chrome.notifications.create({
             type: 'basic',
-            iconUrl: 'icon.png',
+            iconUrl: 'PSX Pulse.png',
             title: `Alert for ${symbol}`,
             message: `Price reached: ${stockData['data'][0][1]}`,
             priority: 2
@@ -63,6 +64,18 @@ async function getAlertValues() {
       }
     })();
   });
+}
+
+async function getInitialData() {
+  try {
+    const indexResponse = await fetch('https://psx-extension.vercel.app/getPreviousClose');
+    const previousCloseData = await indexResponse.json();
+    
+
+    fetchData();
+  } catch (error) {
+    console.error('Error fetching initial data:', error);
+  }
 }
 
 

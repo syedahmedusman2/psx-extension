@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "KSE-100 & HBL Tracker",
+  "name": "PSX Pulse",
   "version": "1.0",
-  "description": "Shows live KSE-100 points and HBL stock price with alerts.",
+  "description": "Shows live KSE-100 points and track your favorite stocks.",
   "permissions": [
     "alarms",
     "storage",
@@ -13,12 +13,12 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_icon": "icon.png"
+    "default_icon": "PSX Pulse.png"
   },
   "icons": {
-    "16": "icon.png",
-    "48": "icon.png",
-    "128": "icon.png"
+    "16": "PSX Pulse.png",
+    "48": "PSX Pulse.png",
+    "128": "PSX Pulse.png"
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self';"

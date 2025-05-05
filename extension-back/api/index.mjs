@@ -1,8 +1,10 @@
 import fetch from 'node-fetch';  // fetch() support in Node
 import express from 'express'
+import { createClient } from '@supabase/supabase-js'
 
 const PORT = process.env.PORT || 3000;
 const app = express()
+const supabase = createClient('https://slgxjauxdygnqokyjbql.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsZ3hqYXV4ZHlnbnFva3lqYnFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYxNjUyMzUsImV4cCI6MjA2MTc0MTIzNX0.GHU0qK2bGMhyDL-Qr_CwXi3CT433dmDNTni68lMcOCU')
 // Allow CORS
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');  // Allow any origin
@@ -12,9 +14,14 @@ app.use((req, res, next) => {
 const previousClose = '111326.57';
 app.get('/kse100', async (req, res) => {
   try {
+    const previousClosing = await supabase
+      .from('closing_day_data')
+      .select('closing_point')
+      .order('created_at', { ascending: false })
+      .limit(1);
     const response = await fetch('https://dps.psx.com.pk/timeseries/int/KSE100');
     let data = await response.json();
-    data["previousClose"] = previousClose; // Adds the key "1stKey" with the value "value"
+    data["previousClose"] = previousClosing["data"][0]['closing_point'] ?? 0;
     res.json(data); // Send the data to the client
   } catch (error) {
     res.status(500).json({ error: `Failed to fetch data` });
@@ -50,7 +57,18 @@ app.get('/getSymbols', async (req, res) => {
   }
 });
 
-
+app.get('/getPreviousClose', async (req, res) => {
+  try {
+    const data = await supabase
+      .from('closing_day_data')
+      .select('closing_point')
+      .order('created_at', { ascending: false })
+      .limit(1);
+    res.json(data["data"][0]); // Send the data to the client
+  } catch (error) {
+    res.status(500).json({ error: `Failed to fetch previous close`});
+  }
+});
 
 
 
