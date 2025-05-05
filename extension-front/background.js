@@ -40,28 +40,15 @@ async function fetchData() {
 async function getAlertValues() {
   chrome.storage.local.get(['alerts'], (res) => {
     const alerts = res.alerts || {};
-    console.log("Alerts:", alerts);
+    // console.log("Alerts:", alerts);
 
     (async () => {
       for (const symbol in alerts) {
         const alertPrice = alerts[symbol];
-        console.log(`Alert for ${symbol}: ${alertPrice}`);
+        // console.log(`Alert for ${symbol}: ${alertPrice}`);
         const stockData = await fetchStockData(symbol);
-        console.log(`Price for ${symbol}: ${stockData['data'][0][1]}`);
+        // console.log(`Price for ${symbol}: ${stockData['data'][0][1]}`);
         checkStockAlerts(stockData['data'][0][1], symbol, alertPrice);
-        // Check for notification display
-        // if (stockData && stockData['data'][0][1] >= alertPrice) {
-        //   console.log(`Alert triggered for ${symbol}: ${stockData['data'][0][1]} >= ${alertPrice}`);
-        //   chrome.notifications.create({
-        //     type: 'basic',
-        //     iconUrl: 'PSX Pulse (3).png',
-        //     title: `Alert for ${symbol}`,
-        //     message: `Price reached: ${stockData['data'][0][1]}`,
-        //     priority: 2
-        //   });
-        //   // Remove the alert after triggering
-        //   delete alerts[symbol];
-        // }
       }
     })();
   });
@@ -70,10 +57,9 @@ async function getAlertValues() {
 
 
 // Set alarm to fetch every 1 minute
-chrome.alarms.create('fetchKSE', { periodInMinutes: 1 });
+chrome.alarms.create('fetchKSE', { periodInMinutes: 3 });
 
 chrome.alarms.onAlarm.addListener(() => {
-  getAlertValues();
   const now = new Date();
   const hour = now.getHours();
   const minutes = now.getMinutes();
@@ -82,10 +68,10 @@ chrome.alarms.onAlarm.addListener(() => {
   const afterMarket = hour > 16 || (hour === 16 && minutes >= 50);
 
   if (beforeMarket || afterMarket) {
-    console.log("Outside market hours — skipping API call.");
+    // console.log("Outside market hours — skipping API call.");
     return; // Don’t call fetchData
   }
-
+  getAlertValues();
   fetchData(); // Safe to call during market hours
 });
 
@@ -108,8 +94,7 @@ chrome.alarms.onAlarm.addListener(() => {
 
 // -------------- Notification & alert work --------------
 function checkStockAlerts(currentPrices, symbol, target) {
-  console.log("Checking stock alerts with current prices:", currentPrices);
-  // Example currentPrices: { MEBL: 51.2, SSGC: 44.5 }
+  // console.log("Checking stock alerts with current prices:", currentPrices);
 
   if (currentPrices !== undefined) {
     const shouldNotify =
@@ -117,14 +102,14 @@ function checkStockAlerts(currentPrices, symbol, target) {
       (currentPrices <= target && target <= 0);   // Alert for downward target
 
     if (shouldNotify) {
-    sendStockNotification(symbol, target, currentPrices);
+      sendStockNotification(symbol, target, currentPrices);
     }
   }
 
 }
 
 function sendStockNotification(symbol, target, current) {
-  console.log("Hitting notification for", symbol, target, current);
+  // console.log("Hitting notification for", symbol, target, current);
   chrome.notifications.create(`alert-${symbol}`, {
     type: 'basic',
     iconUrl: 'PSX Pulse (3).png',
@@ -175,7 +160,6 @@ function formatBadgePercent(current, start) {
 async function fetchStockData(symbol) {
   try {
     const response = await fetch(`https://psx-extension.vercel.app/stock/${symbol}`);
-    console.log(`Response for ${symbol}:`, response);
 
     if (!response.ok) throw new Error("API error");
 

@@ -120,7 +120,9 @@ async function renderTrackedStocks(trackedList) {
     removeBtn.style.height = '20px';
     removeBtn.style.fontSize = '12px';
     removeBtn.style.cursor = 'pointer';
-
+    li.addEventListener('click', () => {
+      window.open(`https://dps.psx.com.pk/company/${symbol}`, '_blank');
+    });
     removeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       trackedSymbols.delete(symbol);
@@ -196,7 +198,8 @@ async function renderTrackedStocks(trackedList) {
     });
 
     // Save on button click
-    setAlertBtn.addEventListener('click', () => {
+    setAlertBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
       const alertPrice = parseFloat(inputField.value);
       if (!isNaN(alertPrice)) {
         chrome.storage.local.get(['alerts'], (res) => {
@@ -206,8 +209,13 @@ async function renderTrackedStocks(trackedList) {
         });
       }
     });
+    inputField.addEventListener('click', (e) => {
+      e.stopPropagation();
 
-    removeAlertBtn.addEventListener('click', () => {
+    });
+
+    removeAlertBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
       const alertPrice = parseFloat(inputField.value);
       if (!isNaN(alertPrice)) {
         chrome.storage.local.get(['alerts'], (res) => {

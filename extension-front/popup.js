@@ -4,6 +4,9 @@ document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM fully loaded");
   const kseDiffEl = document.getElementById("kse100-diff-value");
   const lastUpdatedEl = document.getElementById('last-updated');
+  document.getElementById("KSEHeader").addEventListener("click", () => {
+    window.open("https://dps.psx.com.pk", "_blank");
+  });
   const kseEl = document.getElementById("kse100-value");
   if (kseEl) {
     chrome.storage.local.get(['kse100', 'previousClosing'], (result) => {
