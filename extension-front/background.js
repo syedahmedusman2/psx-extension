@@ -68,7 +68,22 @@ async function getAlertValues() {
 
 // Set alarm to fetch every 1 minute
 chrome.alarms.create('fetchKSE', { periodInMinutes: 5 });
-chrome.alarms.onAlarm.addListener(fetchData);
+chrome.alarms.onAlarm.addListener(() => {
+  const now = new Date();
+  const hour = now.getHours();
+  const minutes = now.getMinutes();
+
+  const beforeMarket = hour < 9;
+  const afterMarket = hour > 16 || (hour === 16 && minutes >= 50);
+
+  if (beforeMarket || afterMarket) {
+    console.log("Outside market hours — skipping API call.");
+    return; // Don’t call fetchData
+  }
+
+  fetchData(); // Safe to call during market hours
+});
+// chrome.alarms.onAlarm.addListener(fetchData);
 // chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 //   console.log("Message received in background:", request);
 
