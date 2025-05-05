@@ -13,12 +13,12 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_icon": "PSX Pulse.png"
+    "default_icon": "PSX Pulse (3).png"
   },
   "icons": {
-    "16": "PSX Pulse.png",
-    "48": "PSX Pulse.png",
-    "128": "PSX Pulse.png"
+    "16": "PSX Pulse (3).png",
+    "48": "PSX Pulse (3).png",
+    "128": "PSX Pulse (3).png"
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self';"

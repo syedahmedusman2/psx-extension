@@ -250,27 +250,4 @@ async function renderTrackedStocks(trackedList) {
     };
     return date.toLocaleString('en-US', options);
   }
-  // trackedArray.forEach(symbol => {
-  //   const li = document.createElement('li');
-  //   li.style.display = 'flex';
-  //   li.style.justifyContent = 'space-between';
-  //   li.style.alignItems = 'center';
-  //   li.style.padding = '4px 8px';
-  //   const text = document.createElement('span');
-  //   text.textContent = symbol;
-
-  //   const removeBtn = document.createElement('button');
-  //   removeBtn.textContent = '❌';
-  //   removeBtn.className = 'remove-btn';
-  //   removeBtn.style.marginLeft = '10px';
-
-  //   removeBtn.addEventListener('click', () => {
-  //     trackedSymbols.delete(symbol);
-  //     renderTrackedStocks(trackedList); // Re-render after removal
-  //   });
-
-  //   li.appendChild(text);
-  //   li.appendChild(removeBtn);
-  //   trackedList.appendChild(li);
-  // });
 }

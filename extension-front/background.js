@@ -40,7 +40,7 @@ async function fetchData() {
 async function getAlertValues() {
   chrome.storage.local.get(['alerts'], (res) => {
     const alerts = res.alerts || {};
-    console.log("Alerts:", alerts['SSGC']);
+    console.log("Alerts:", alerts);
 
     (async () => {
       for (const symbol in alerts) {
@@ -48,40 +48,32 @@ async function getAlertValues() {
         console.log(`Alert for ${symbol}: ${alertPrice}`);
         const stockData = await fetchStockData(symbol);
         console.log(`Price for ${symbol}: ${stockData['data'][0][1]}`);
+        checkStockAlerts(stockData['data'][0][1], symbol, alertPrice);
         // Check for notification display
-        if (stockData && stockData['data'][0][1] >= alertPrice) {
-          console.log(`Alert triggered for ${symbol}: ${stockData['data'][0][1]} >= ${alertPrice}`);
-          chrome.notifications.create({
-            type: 'basic',
-            iconUrl: 'PSX Pulse.png',
-            title: `Alert for ${symbol}`,
-            message: `Price reached: ${stockData['data'][0][1]}`,
-            priority: 2
-          });
-          // Remove the alert after triggering
-          delete alerts[symbol];
-        }
+        // if (stockData && stockData['data'][0][1] >= alertPrice) {
+        //   console.log(`Alert triggered for ${symbol}: ${stockData['data'][0][1]} >= ${alertPrice}`);
+        //   chrome.notifications.create({
+        //     type: 'basic',
+        //     iconUrl: 'PSX Pulse (3).png',
+        //     title: `Alert for ${symbol}`,
+        //     message: `Price reached: ${stockData['data'][0][1]}`,
+        //     priority: 2
+        //   });
+        //   // Remove the alert after triggering
+        //   delete alerts[symbol];
+        // }
       }
     })();
   });
 }
 
-async function getInitialData() {
-  try {
-    const indexResponse = await fetch('https://psx-extension.vercel.app/getPreviousClose');
-    const previousCloseData = await indexResponse.json();
-    
-
-    fetchData();
-  } catch (error) {
-    console.error('Error fetching initial data:', error);
-  }
-}
 
 
 // Set alarm to fetch every 1 minute
-chrome.alarms.create('fetchKSE', { periodInMinutes: 5 });
+chrome.alarms.create('fetchKSE', { periodInMinutes: 1 });
+
 chrome.alarms.onAlarm.addListener(() => {
+  getAlertValues();
   const now = new Date();
   const hour = now.getHours();
   const minutes = now.getMinutes();
@@ -96,6 +88,7 @@ chrome.alarms.onAlarm.addListener(() => {
 
   fetchData(); // Safe to call during market hours
 });
+
 // chrome.alarms.onAlarm.addListener(fetchData);
 // chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 //   console.log("Message received in background:", request);
@@ -113,6 +106,48 @@ chrome.alarms.onAlarm.addListener(() => {
 //   }
 // });
 
+// -------------- Notification & alert work --------------
+function checkStockAlerts(currentPrices, symbol, target) {
+  console.log("Checking stock alerts with current prices:", currentPrices);
+  // Example currentPrices: { MEBL: 51.2, SSGC: 44.5 }
+
+  if (currentPrices !== undefined) {
+    const shouldNotify =
+      (currentPrices >= target && target >= 0) || // Alert for upward target
+      (currentPrices <= target && target <= 0);   // Alert for downward target
+
+    if (shouldNotify) {
+    sendStockNotification(symbol, target, currentPrices);
+    }
+  }
+
+}
+
+function sendStockNotification(symbol, target, current) {
+  console.log("Hitting notification for", symbol, target, current);
+  chrome.notifications.create(`alert-${symbol}`, {
+    type: 'basic',
+    iconUrl: 'PSX Pulse (3).png',
+    title: `Price Alert: ${symbol}`,
+    message: `Target: ${target}, Current: ${current}`,
+    buttons: [{ title: 'Dismiss Alert' }],
+    priority: 2
+  });
+}
+
+chrome.notifications.onButtonClicked.addListener((notifId, btnIdx) => {
+  if (btnIdx === 0 && notifId.startsWith('alert-')) {
+    const symbol = notifId.split('-')[1];
+    chrome.storage.local.get(['alerts'], (result) => {
+      const alerts = result.alerts || {};
+      delete alerts[symbol];
+      chrome.storage.local.set({ alerts });
+      chrome.notifications.clear(notifId);
+    });
+  }
+});
+
+// -------------- Notification & alert work end --------------
 fetchData();
 getAlertValues();
 
