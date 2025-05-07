@@ -1,11 +1,219 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-  <title>KSE-100 Tracker</title>
-  <script src="popup.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PSX Tracker</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 16px;
+      background: #f5f5f5;
+      color: #333;
+      width: 320px;
+    }
+
+
+
+    .header {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .kse100 {
+      font-size: 22px;
+      font-weight: bold;
+      color: #006400;
+    }
+
+    .search {
+      display: flex;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 6px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      padding: 6px 10px;
+      background-color: #007bff;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .stock-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .stock-item {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-top: 6px;
+      padding: 8px;
+      position: relative;
+    }
+
+    .stock-item span {
+      font-weight: bold;
+    }
+
+    .graph-placeholder {
+      margin-top: 16px;
+      height: 175px;
+      background: #e0e0e0;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #888;
+      font-size: 14px;
+    }
+
+    #search-results li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 8px;
+      margin: 4px 0;
+      background: #f4f4f4;
+      border-radius: 6px;
+    }
+
+    .add-btn {
+      background-color: #4CAF50;
+      /* Green background */
+      color: white;
+      /* White icon color */
+      border: none;
+      /* No border */
+      padding: 4px 8px;
+      /* Smaller button with some padding */
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 12px;
+      /* Slightly smaller font size */
+      transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+    }
+
+    /* Hover effect for the Add button */
+    .add-btn:hover {
+      background-color: #45a049;
+      /* Darker green on hover */
+      transform: scale(1.1);
+      /* Slightly enlarge on hover */
+    }
+
+    /* Remove Button Styling */
+    .remove-btn {
+      background-color: #ff4d4d;
+      /* Red background */
+      color: white;
+      /* White icon color */
+      border: none;
+      /* No border */
+      padding: 2px 6px;
+      /* Smaller button with some padding */
+      border-radius: 80px;
+      cursor: pointer;
+      font-size: 12px;
+      /* Slightly smaller font size */
+      transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+    }
+
+    /* Hover effect for the Remove button */
+    .remove-btn:hover {
+      background-color: #d11a2a;
+      /* Darker red on hover */
+      transform: scale(1.1);
+      /* Slightly enlarge on hover */
+    }
+
+    .diff-up {
+      color: green;
+      font-size: 14px;
+      font-weight: bold;
+      margin-left: 6px;
+    }
+
+    .diff-down {
+      color: red;
+      font-size: 14px;
+      font-weight: bold;
+      margin-left: 6px;
+    }
+
+    #search-results {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    #tracked-stocks {
+      font-size: 14px;
+    }
+
+    .stock-box {
+      margin-bottom: 10px;
+      padding: 8px;
+      background: #f0f0f0;
+      border-radius: 6px;
+      line-height: 1.4;
+    }
+
+    li {
+      margin: 10px 0;
+    }
+
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+    }
+  </style>
 </head>
-<body style="font-family: Arial, sans-serif; margin: 20px;">
-  <h2 id="kse">Loading KSE-100...</h2>
-  <h3 id="hbl">Loading HBL...</h3>
+
+<body>
+
+  <div class="header" id="KSEHeader">
+    <div>KSE-100 Index</div>
+    <div>
+      <span id="kse100-value" class="kse100"></span>
+      <span id="kse100-diff-value"></span>
+    </div>
+  </div>
+  </div>
+  <p id="last-updated">As of —</p>
+
+  <div class="search">
+    <input type="text" id="stock-search" placeholder="Search stock..." />
+  </div>
+  <ul id="search-results"></ul>
+
+  <h3>Tracked Stocks (max 3):</h3>
+  <div id="tracked-stocks"></div>
+  <!-- <ul id="tracked-stocks"></ul> -->
+
+  <div class="graph-placeholder">
+    <canvas id="stockChart"></canvas>
+  </div>
+  <div style="text-align: center; font-size: 10px; color: #666; margin-top: 20px;">
+    Need help? <a href="https://wa.me/923162806249" target="_blank" style="color: #666; text-decoration: none;">+92-316-2806249</a>
+  </div>
+  <script src="search.js"></script>
+  <script src="chart.js"></script>
+  <script src="popup.js" defer></script>
 </body>
+
 </html>
