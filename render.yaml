@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: psx-pulse-api
+    runtime: node
+    plan: free
+    rootDir: extension-back
+    buildCommand: node --check server.mjs
+    startCommand: node server.mjs
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false

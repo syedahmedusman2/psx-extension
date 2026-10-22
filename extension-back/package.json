@@ -5,7 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.mjs",
+    "test": "node --test worker/index.test.mjs server.test.mjs"
   },
   "keywords": [],
   "author": "",
@@ -18,5 +19,8 @@
   },
   "devDependencies": {
     "supabase": "^2.22.6"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }
